@@ -1,56 +1,59 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import "./App.css";
+// import { useQueryClient } from "@tanstack/react-query"
+import { useState } from "react";
+// import { getPost } from "./api/posts"
+// import { CreatePost } from "./CreatePost"
+// import Post from "./Post"
+// import { PostListInfinite } from "./PostListInfinite"
+// import { PostListPaginated } from "./PostListPaginated"
+import PostsList1 from "./PostsList1";
+import PostsList2 from "./PostsList2";
+import Post from "./Post";
+import { CreatePost } from "./CreatePost";
+import { PostListPaginated } from "./PostListPaginated";
+import { PostListInfinite } from "./PostListInfinite";
+import { useQueryClient } from "@tanstack/react-query";
+import { getPost } from "./api/posts";
 
-function App() {
-  const { isLoading, error, data } = useQuery({
-    queryKey: ["posts"],
-    queryFn: async () => {
-      await wait(1000);
-      return POSTS;
-    },
-  });
+export default function App() {
+  const [currentPage, setCurrentPage] = useState(<PostsList1 />);
 
   const queryClient = useQueryClient();
-  const { mutate: newPostMutation, isPending: newPostIsPending } = useMutation({
-    mutationFn: async () => {
-      await wait(1000);
-      POSTS.push({ id: 3, title: "Post 3" });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
-    },
-  });
-
-  if (isLoading) return <h1>Loading...</h1>;
-  if (error) return <h1>Error</h1>;
+  function onHoverPostOneLink() {
+    queryClient.prefetchQuery({
+      queryKey: ["posts", 1],
+      queryFn: () => getPost(1),
+    });
+  }
 
   return (
-    <div className="App">
-      <h1>TanStack Query</h1>
-      <ul>
-        {data?.map((post) => (
-          <li key={post.id}>{post.title}</li>
-        ))}
-      </ul>
-      <button
-        disabled={newPostIsPending}
-        onClick={() => newPostMutation()} // i have to add ()
-      >
-        Add Post
+    <div>
+      <button onClick={() => setCurrentPage(<PostsList1 />)}>
+        Posts List 1
       </button>
+      <button onClick={() => setCurrentPage(<PostsList2 />)}>
+        Posts List 2
+      </button>
+      <button
+        onMouseEnter={onHoverPostOneLink}
+        onClick={() => setCurrentPage(<Post id={1} />)}
+      >
+        First Post
+      </button>
+      <button
+        onClick={() =>
+          setCurrentPage(<CreatePost setCurrentPage={setCurrentPage} />)
+        }
+      >
+        New Post
+      </button>
+      <button onClick={() => setCurrentPage(<PostListPaginated />)}>
+        Post List Paginated
+      </button>
+      <button onClick={() => setCurrentPage(<PostListInfinite />)}>
+        Post List Infinite
+      </button>
+      <br />
+      {currentPage}
     </div>
   );
-}
-
-export default App;
-
-//POSTS and wait just for simulation
-const POSTS = [
-  { id: 1, title: "Post 1" },
-  { id: 2, title: "Post 2" },
-];
-function wait(time: number) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, time);
-  });
 }
