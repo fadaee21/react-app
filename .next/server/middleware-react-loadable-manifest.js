@@ -1,0 +1,1 @@
+self.__REACT_LOADABLE_MANIFEST="{\"../../node_modules/@tanstack/query-devtools/build/dev.js -> ./Devtools/JDX7DFYK.js\":{\"id\":\"../../node_modules/@tanstack/query-devtools/build/dev.js -> ./Devtools/JDX7DFYK.js\",\"files\":[\"static/chunks/node_modules_tanstack_query-devtools_build_Devtools_JDX7DFYK_js.js\"]}}"
